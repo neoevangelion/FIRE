@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="结合北京养老金计算规则的家庭 FIRE 财务分析工具"
+    />
+    <title>FIRE Lens · 家庭财务自由分析</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">FIRE LENS · 北京养老金版</p>
+          <h1>看清通往财务自由的每一年</h1>
+          <p class="hero-copy">
+            将资产、生活成本与夫妻养老金放在同一条时间线上，推演未来 50 年。
+          </p>
+        </div>
+        <div class="hero-badge">
+          <span>规划周期</span>
+          <strong>50</strong>
+          <small>年</small>
+        </div>
+      </header>
+
+      <section class="panel assumptions-panel is-collapsed">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">家庭参数</p>
+            <h2>现在的财务起点</h2>
+          </div>
+          <button class="ghost-button panel-toggle" type="button" data-target="household-controls">
+            展开参数
+            <span aria-hidden="true">⌄</span>
+          </button>
+        </div>
+        <div class="control-grid" id="household-controls" hidden>
+          <div class="control-card">
+            <div class="control-label">
+              <label for="savings">当前存款</label>
+              <div class="number-wrap">
+                <input id="savings" type="number" value="700" min="0" max="10000" step="1" />
+                <span>万元</span>
+              </div>
+            </div>
+            <input data-sync="savings" type="range" value="700" min="0" max="3000" step="5" />
+          </div>
+          <div class="control-card phase-expense-card">
+            <div class="phase-expense-heading">
+              <div>
+                <label>阶段性每年花费</label>
+                <p>每 5 年设置一次，金额均按今日购买力填写</p>
+              </div>
+              <button id="copy-first-expense" class="text-button" type="button">
+                将第 1 阶段应用到全部
+              </button>
+            </div>
+            <div class="phase-expense-grid" id="phase-expense-controls"></div>
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <label for="return-rate">年投资收益率</label>
+              <div class="number-wrap">
+                <input id="return-rate" type="number" value="2.4" min="-20" max="30" step="0.1" />
+                <span>%</span>
+              </div>
+            </div>
+            <input data-sync="return-rate" type="range" value="2.4" min="-10" max="20" step="0.1" />
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <label for="inflation-rate">年通货膨胀率</label>
+              <div class="number-wrap">
+                <input id="inflation-rate" type="number" value="2" min="-5" max="20" step="0.1" />
+                <span>%</span>
+              </div>
+            </div>
+            <input data-sync="inflation-rate" type="range" value="2" min="-2" max="10" step="0.1" />
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <label for="avg-wage">北京当前月平均工资</label>
+              <div class="number-wrap">
+                <input id="avg-wage" type="number" value="11937" min="1000" max="50000" step="100" />
+                <span>元</span>
+              </div>
+            </div>
+            <input data-sync="avg-wage" type="range" value="11937" min="5000" max="30000" step="50" />
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <label for="wage-growth">社平工资年增长率</label>
+              <div class="number-wrap">
+                <input id="wage-growth" type="number" value="1" min="-5" max="20" step="0.1" />
+                <span>%</span>
+              </div>
+            </div>
+            <input data-sync="wage-growth" type="range" value="1" min="-2" max="12" step="0.1" />
+          </div>
+        </div>
+      </section>
+
+      <section class="people-grid">
+        <article class="panel person-panel is-collapsed" data-person="a">
+          <div class="person-title">
+            <div class="avatar avatar-a">A</div>
+            <div>
+              <p class="section-kicker">家庭成员一</p>
+              <h2>养老金参数</h2>
+            </div>
+            <div class="person-title-actions">
+              <button class="ghost-button panel-toggle" type="button" data-target="a-parameter-content">
+                展开参数
+                <span aria-hidden="true">⌄</span>
+              </button>
+              <button class="ghost-button detail-toggle" type="button" data-target="a-details">
+                展开逐年系数
+                <span aria-hidden="true">⌄</span>
+              </button>
+            </div>
+          </div>
+          <div id="a-parameter-content" hidden>
+            <div class="person-controls" id="a-controls"></div>
+            <div class="coefficient-details" id="a-details" hidden>
+              <div class="detail-heading">
+                <div>
+                  <h3>逐年缴费系数</h3>
+                  <p>系数 = 当年本人缴费基数 ÷ 当年北京市社平工资</p>
+                </div>
+                <button class="text-button reset-coefficients" type="button" data-person="a">
+                  按历史及未来档位重置
+                </button>
+              </div>
+              <div class="year-grid" id="a-year-grid"></div>
+            </div>
+          </div>
+          <div class="pension-result" id="a-pension-result"></div>
+        </article>
+
+        <article class="panel person-panel is-collapsed" data-person="b">
+          <div class="person-title">
+            <div class="avatar avatar-b">B</div>
+            <div>
+              <p class="section-kicker">家庭成员二</p>
+              <h2>养老金参数</h2>
+            </div>
+            <div class="person-title-actions">
+              <button class="ghost-button panel-toggle" type="button" data-target="b-parameter-content">
+                展开参数
+                <span aria-hidden="true">⌄</span>
+              </button>
+              <button class="ghost-button detail-toggle" type="button" data-target="b-details">
+                展开逐年系数
+                <span aria-hidden="true">⌄</span>
+              </button>
+            </div>
+          </div>
+          <div id="b-parameter-content" hidden>
+            <div class="person-controls" id="b-controls"></div>
+            <div class="coefficient-details" id="b-details" hidden>
+              <div class="detail-heading">
+                <div>
+                  <h3>逐年缴费系数</h3>
+                  <p>系数 = 当年本人缴费基数 ÷ 当年北京市社平工资</p>
+                </div>
+                <button class="text-button reset-coefficients" type="button" data-person="b">
+                  按历史及未来档位重置
+                </button>
+              </div>
+              <div class="year-grid" id="b-year-grid"></div>
+            </div>
+          </div>
+          <div class="pension-result" id="b-pension-result"></div>
+        </article>
+      </section>
+
+      <section class="summary-grid" aria-live="polite">
+        <article class="metric metric-primary">
+          <p>50 年后预计资产</p>
+          <strong id="ending-assets">—</strong>
+          <span id="ending-assets-real">—</span>
+        </article>
+        <article class="metric">
+          <p>资产可持续性</p>
+          <strong id="sustainability">—</strong>
+          <span id="depletion-year">—</span>
+        </article>
+        <article class="metric">
+          <p>退休后首年月养老金</p>
+          <strong id="combined-pension">—</strong>
+          <span>夫妻合计（各自退休时口径）</span>
+        </article>
+        <article class="metric">
+          <p>当前净实际收益率</p>
+          <strong id="real-return">—</strong>
+          <span>投资收益率扣除通胀影响</span>
+        </article>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-heading chart-heading">
+          <div>
+            <p class="section-kicker">50 年推演</p>
+            <h2>家庭资产与现金流</h2>
+          </div>
+          <div class="chart-tabs" role="group" aria-label="图表口径">
+            <button type="button" class="chart-tab active" data-mode="nominal">名义金额</button>
+            <button type="button" class="chart-tab" data-mode="real">今日购买力</button>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span><i class="legend-assets"></i>年末资产</span>
+          <span><i class="legend-expense"></i>年度花费</span>
+          <span><i class="legend-pension"></i>养老金收入</span>
+          <span><i class="legend-interest"></i>投资利息收益</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="projection-chart" aria-label="未来50年家庭资产与现金流图表"></canvas>
+          <div class="chart-tooltip" id="chart-tooltip" hidden></div>
+        </div>
+      </section>
+
+      <section class="panel formula-panel">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">计算口径</p>
+            <h2>北京养老金计算说明</h2>
+          </div>
+          <button id="formula-toggle" class="ghost-button" type="button">查看公式</button>
+        </div>
+        <div id="formula-content" class="formula-content" hidden>
+          <div class="formula-card">
+            <span>基础养老金 J</span>
+            <code>(C平 + C平 × Z实指数) ÷ 2 × N实 × 1%</code>
+          </div>
+          <div class="formula-card">
+            <span>个人账户养老金</span>
+            <code>退休时个人账户余额 ÷ 退休年龄对应计发月数</code>
+          </div>
+          <p>
+            Z同指数按 1 计算；缴费年限支持小数。未来账户余额按当前余额获得投资收益、以后年度按
+            “缴费基数 × 8%”进入个人账户估算；灵活就业支出包括所选档位缴费基数的 20% 养老保险，
+            以及 100% 社平工资基数的 4.9% 医疗保险，不考虑失业保险；
+            家庭投资收益率仅作用于可投资资产，不用于养老金个人账户余额；
+            停止工作前按历史缴费系数计算，停止工作后按灵活就业档位计算，两者均计入实际缴费指数；
+            0% 年度不增加实际缴费年限。未来全部选择 0% 时，退休账户余额等于当前余额。
+            未来养老和医疗缴费基数均随社平工资增长。养老金领取后按通胀率增长，以保持购买力。
+            本工具用于规划参考，不替代社保经办机构核定结果。
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <span>FIRE Lens</span>
+        <p>所有计算仅在本地浏览器中完成，不会上传数据。</p>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
